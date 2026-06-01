@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEDO JR 99 ISLAMIC - المصحف الإلكتروني ومواقيت الصلاة</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            text-align: center;
+            background-color: rgba(46, 125, 50, 0.9); 
+            color: white;
+            padding: 25px 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .header h1 { margin: 0; font-size: 2.3rem; font-family: 'Arial', sans-serif; letter-spacing: 1px; }
+        .header p { margin: 8px 0 0 0; opacity: 0.9; font-size: 1.1rem; }
+        
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .section-prayer {
+            background: rgba(255, 255, 255, 0.92); 
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            margin-bottom: 25px;
+            backdrop-filter: blur(3px); 
+        }
+        .section-prayer h2 {
+            color: #2e7d32;
+            margin-top: 0;
+            border-bottom: 2px solid #e8f5e9;
+            padding-bottom: 10px;
+            font-size: 1.5rem;
+        }
+        .prayer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+        .prayer-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #e8f5e9;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .prayer-card span:first-child { color: #2e7d32; margin-bottom: 5px; }
+        .prayer-card span:last-child { font-size: 1.1rem; color: #333; white-space: nowrap; }
+
+        .quran-control-panel {
+            background-color: rgba(197, 190, 158, 0.95);
+            border: 1px solid #b3a985;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        .control-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .control-group {
+            background-color: #fdfdfd;
+            border-radius: 20px;
+            padding: 6px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #dcd6bc;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .control-group select, .control-group input {
+            border: none;
+            background-color: #d89e24;
+            color: white;
+            border-radius: 15px;
+            padding: 4px 12px;
+            font-weight: bold;
+            font-family: inherit;
+            cursor: pointer;
+            outline: none;
+            font-size: 14px;
+        }
+        .control-group select option {
+            background-color: white;
+            color: #333;
+        }
+        
+        .compass-toggle-btn {
+            background-color: #8a6d3b !important;
+            color: white !important;
+            border-radius: 15px;
+            padding: 5px 15px;
+            cursor: pointer;
+            font-weight: bold;
+            border: none;
+            transition: background-color 0.2s;
+        }
+        .compass-toggle-btn:hover { background-color: #6d542b !important; }
+
+        .audio-container {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            background-color: #fdfdfd;
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid #dcd6bc;
+        }
+        .audio-nav-btn {
+            background-color: #2e7d32;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        .audio-nav-btn:hover { background-color: #1b5e20; }
+        audio { height: 32px; flex-grow: 1; max-width: 350px; }
+
+        .quran-page-container {
+            background-color: #fdfbfa;
+            border: 35px solid transparent;
+            border-image: url('https://img.icons8.com/ios-filled/100/d4af37/islamic-borders.png') 40 round;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.35);
+            border-radius: 8px;
+            padding: 25px 20px;
+            min-height: 520px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background-image: radial-gradient(#fffdf9 60%, #f4eee1 100%);
+            position: relative;
+        }
+        
+        .quran-page-container::before {
+            content: '';
+            position: absolute;
+            top: -15px; left: -15px; right: -15px; bottom: -15px;
+            border: 2px double #b8860b;
+            pointer-events: none;
+            border-radius: 4px;
+        }
+
+        .surah-header-box {
+            text-align: center;
+            border: 2px double #8a6d3b;
+            max-width: 260px;
+            margin: 0 auto 30px auto;
+            padding: 6px 18px;
+            background-color: #f7f1e3;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #5d4037;
+            font-size: 1.4rem;
+            box-shadow: inset 0 0 8px rgba(138,109,59,0.2);
+            position: relative;
+            z-index: 2;
+        }
+        .quran-text-flow {
+            line-height: 2.8;
+            font-size: 28px;
+            text-align: center;
+            color: #222;
+            word-spacing: 3px;
+            flex-grow: 1;
+            font-family: 'me_quran', 'Traditional Arabic', sans-serif;
+            padding: 0 10px;
+            position: relative;
+            z-index: 2;
+        }
+        .highlight-ayah {
+            background-color: rgba(216, 158, 36, 0.25);
+            border-radius: 6px;
+            padding: 0 6px;
+            transition: background-color 0.3s ease;
+        }
+        .page-number { text-align: center; margin-top: 25px; font-weight: bold; color: #8a6d3b; font-size: 1.1rem; position: relative; z-index: 2; }
+
+        .tafseer-section {
+            background: rgba(253, 253, 253, 0.95);
+            border: 1px solid #e0d9c1;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            backdrop-filter: blur(3px);
+        }
+        .tafseer-section h3 {
+            color: #8a6d3b; margin-top: 0; border-bottom: 2px solid #f4f1ea; padding-bottom: 8px; font-size: 1.2rem; display: flex; align-items: center; gap: 8px;
+        }
+        .tafseer-item { margin-bottom: 14px; line-height: 1.8; font-size: 16px; border-bottom: 1px dashed #f1ebd9; padding-bottom: 10px; color: #333; text-align: justify; }
+        .tafseer-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .tafseer-ayah-num { color: #2e7d32; font-weight: bold; margin-left: 5px; }
+
+        .navigation-buttons { display: flex; justify-content: space-between; margin-top: 20px; gap: 20px; }
+        .nav-btn { flex: 1; padding: 14px; font-size: 18px; font-weight: bold; background-color: #2e7d32; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .nav-btn:disabled { background-color: #ccc; cursor: not-allowed; box-shadow: none; }
+
+        @media (max-width: 600px) {
+            .quran-page-container {
+                border: 20px solid transparent;
+                border-image: url('https://img.icons8.com/ios-filled/100/d4af37/islamic-borders.png') 40 round;
+                padding: 15px 10px;
+            }
+            .quran-page-container::before { top: -8px; left: -8px; right: -8px; bottom: -8px; }
+            .quran-text-flow { font-size: 22px; line-height: 2.3; }
+        }
+
+        .pc-warning-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 400px;
+            width: 85%;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+            border-top: 6px solid #d4af37;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .modal-content h3 { color: #8a6d3b; margin-top: 0; font-size: 1.4rem; }
+        .modal-content p { color: #555; line-height: 1.6; font-size: 16px; margin: 15px 0 25px 0; }
+        .modal-close-btn {
+            background-color: #2e7d32; color: white; border: none; padding: 10px 25px;
+            font-size: 15px; font-weight: bold; border-radius: 20px; cursor: pointer; transition: background 0.2s;
+        }
+        .modal-close-btn:hover { background-color: #1b5e20; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .qibla-screen {
+            display: none;
+            background: rgba(245, 245, 245, 0.95);
+            color: #333;
+            padding: 40px 20px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            backdrop-filter: blur(5px);
+        }
+        .qibla-screen h2 { color: #2e7d32; margin-top: 0; font-size: 1.8rem; }
+        .qibla-screen p { color: #666; font-size: 15px; }
+        
+        .compass-container {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            margin: 30px auto;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 10px solid #2e7d32;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15), inset 0 0 15px rgba(0,0,0,0.05);
+        }
+        .compass-border-ticks {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 50%;
+            border: 2px dashed rgba(46, 125, 50, 0.3);
+            margin: 4px;
+            pointer-events: none;
+        }
+        .direction-label {
+            position: absolute;
+            font-weight: 900;
+            font-size: 18px;
+            color: #555;
+            font-family: 'Arial', sans-serif;
+            transform: translate(-50%, -50%);
+        }
+        .label-n { top: 30px; left: 50%; color: #c62828; font-size: 22px; }
+        .label-s { bottom: 10px; left: 50%; }
+        .label-e { top: 50%; right: 12px; }
+        .label-w { top: 50%; left: 25px; }
+        
+        .label-sub { font-size: 11px; color: #999; font-weight: normal; }
+        .label-nw { top: 22%; left: 22%; }
+        .label-ne { top: 22%; right: 12%; }
+        .label-sw { bottom: 22%; left: 22%; }
+        .label-se { bottom: 22%; right: 12%; }
+
+        .center-star {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 140px; height: 140px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            opacity: 0.85;
+        }
+        .compass-needle-group {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            transition: transform 0.1s ease-out;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .needle-pointer {
+            position: absolute;
+            top: 15%; left: 50%;
+            width: 0; height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-bottom: 110px solid #e65100;
+            transform: translateX(-50%);
+        }
+        .needle-pointer::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 0; height: 0;
+            border-left: 12px solid transparent;
+            border-right: 0px solid transparent;
+            border-bottom: 110px solid #ffb74d;
+        }
+        .needle-pointer-bottom {
+            position: absolute;
+            bottom: 15%; left: 50%;
+            width: 0; height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 110px solid #e0e0e0;
+            transform: translateX(-50%);
+        }
+        .kaaba-icon-badge {
+            position: absolute;
+            top: 5%; left: 50%;
+            transform: translateX(-50%);
+            font-size: 32px;
+            filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.2));
+            z-index: 10;
+        }
+        .center-pivot {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 16px; height: 16px;
+            background: radial-gradient(#ffffff, #757575);
+            border: 2px solid #424242;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 15;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .close-compass-btn {
+            background-color: #2e7d32; color: white; padding: 12px 30px; border: none;
+            border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer;
+            margin-top: 25px; box-shadow: 0 4px 10px rgba(46,125,50,0.2); transition: all 0.2s;
+        }
+        .close-compass-btn:hover { background-color: #1b5e20; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>MEDO JR 99 ISLAMIC</h1>
+        <p>بوابتك اليومية لمواقيت الصلاة والقرآن الكريم</p>
+    </div>
+
+    <div id="pcWarningModal" class="pc-warning-modal">
+        <div class="modal-content">
+            <h3>🧭 تنبيه اتجاه القبلة</h3>
+            <p>يستحسن الدخول بالهاتف لتتمتع بتجربة أحسن وبوصلة حقيقية دقيقة.</p>
+            <button class="modal-close-btn" onclick="closeWarningModal()">حسناً، الاستمرار في المصحف</button>
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <div class="section-prayer">
+            <h2>مواقيت الصلاة اليوم (القاهرة)</h2>
+            <div class="prayer-grid">
+                <div class="prayer-card"><span>الفجر</span><span id="Fajr">-</span></div>
+                <div class="prayer-card"><span>الظهر</span><span id="Dhuhr">-</span></div>
+                <div class="prayer-card"><span>العصر</span><span id="Asr">-</span></div>
+                <div class="prayer-card"><span>المغرب</span><span id="Maghrib">-</span></div>
+                <div class="prayer-card"><span>العشاء</span><span id="Isha">-</span></div>
+            </div>
+        </div>
+
+        <div id="mainQuranSection">
+            <div class="quran-control-panel">
+                <div class="control-row">
+                    <div class="control-group">
+                        <span>السورة:</span>
+                        <select id="surahSelect" onchange="jumpToSurah(this.value)"></select>
+                    </div>
+                    <div class="control-group">
+                        <span>الصفحة:</span>
+                        <input type="number" id="pageInput" min="1" max="604" value="1" style="width: 55px; text-align: center;" onchange="jumpToPage(this.value)">
+                    </div>
+                    <div class="control-group">
+                        <span>الجزء:</span>
+                        <select id="juzSelect" onchange="jumpToJuz(this.value)"></select>
+                    </div>
+                    <button class="compass-toggle-btn" onclick="handleCompassClick()">🧭 اتجاه القبلة</button>
+                </div>
+
+                <div class="control-row">
+                    <div class="control-group">
+                        <span>القارئ:</span>
+                        <select id="reciterSelect" onchange="changeReciter()">
+                            <option value="Ahmed_Neana_128kbps">الشيخ أحمد نعينع</option>
+                            <option value="Mahmoud_Ali_Al_Banna_32kbps">الشيخ محمود علي البنا (مرتل)</option>
+                            <option value="Mustafa_Ismail_48kbps">الشيخ مصطفى إسماعيل</option>
+                            <option value="Alafasy_128kbps">الشيخ مشاري راشد العفاسي</option>
+                            <option value="Yasser_Ad-Dussary_128kbps">الشيخ ياسر الدوسري</option>
+                            <option value="Minshawy_Murattal_128kbps">محمد صديق المنشاوي (مرتل)</option>
+                            <option value="Minshawy_Mujawwad_64kbps">محمد صديق المنشاوي (مجود)</option>
+                            <option value="Abdul_Basit_Murattal_64kbps">عبد الباسط عبد الصمد (مرتل)</option>
+                            <option value="Abdul_Basit_Mujawwad_128kbps">عبد الباسط عبد الصمد (مجود)</option>
+                            <option value="Husary_128kbps">محمود خليل الحصري (مرتل)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="audio-container">
+                        <button class="audio-nav-btn" onclick="skipAyah(-1)" title="الآية السابقة">▶|</button>
+                        <audio id="audioPlayer" controls></audio>
+                        <button class="audio-nav-btn" onclick="skipAyah(1)" title="الآية التالية">|◀</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quran-page-container">
+                <div id="surahHeader" class="surah-header-box">سُورَةُ الفَاتِحَةِ</div>
+                <div id="quranPageContent" class="quran-text-flow">جاري تحميل الآيات...</div>
+                <div id="pageNumberDisplay" class="page-number">صفحة ١</div>
+            </div>
+
+            <div class="tafseer-section">
+                <h3>📖 التفسير الميسر لآيات الصفحة:</h3>
+                <div id="tafseerContent">جاري تحميل التفسير الميسر...</div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button id="prevBtn" class="nav-btn" onclick="changePage(-1)">◄ الصفحة السابقة</button>
+                <button id="nextBtn" class="nav-btn" onclick="changePage(1)">الصفحة التالية ►</button>
+            </div>
+        </div>
+
+        <div id="qiblaScreen" class="qibla-screen">
+            <h2>🧭 بوصلة اتجاه القِبلة الذكية</h2>
+            <p>قم بتدوير الشاشة ليتطابق السهم البرتقالي الحاد ومجسم الكعبة 🕋 مع اتجاه الشمال النقي (N)</p>
+            
+            <div class="compass-container" id="compassContainer">
+                <div class="compass-border-ticks"></div>
+                
+                <svg class="center-star" viewBox="0 0 100 100">
+                    <polygon points="50,5 55,40 95,50 55,60 50,95 45,60 5,50 45,40" fill="#1e88e5" />
+                    <polygon points="50,18 53,43 82,50 53,57 50,82 47,57 18,50 47,43" fill="#90caf9" />
+                </svg>
+
+                <div class="direction-label label-n">N</div>
+                <div class="direction-label label-s">S</div>
+                <div class="direction-label label-e">E</div>
+                <div class="direction-label label-w">W</div>
+                
+                <div class="direction-label label-sub label-nw">NW</div>
+                <div class="direction-label label-ne">NE</div>
+                <div class="direction-label label-sw">SW</div>
+                <div class="direction-label label-se">SE</div>
+
+                <div class="compass-needle-group" id="compassNeedleGroup">
+                    <div class="kaaba-icon-badge">🕋</div>
+                    <div class="needle-pointer"></div>
+                    <div class="needle-pointer-bottom"></div>
+                </div>
+
+                <div class="center-pivot"></div>
+            </div>
+            
+            <p id="angleDisplay" style="color: #2e7d32; font-weight: bold; font-size: 18px;">الزاوية المقدرة: 0°</p>
+            <button class="close-compass-btn" onclick="toggleCompassView(false)">← العودة للمصحف الشريف</button>
+        </div>
+
+    </div>
+
+    <script>
+        let currentPage = 1;
+        let currentAyahsData = [];
+        let currentAudioIndex = 0;
+        let currentRotation = 0;
+        let targetSurahNumber = null;
+
+        function convertTo12HourFormat(timeString) {
+            if (!timeString) return "-";
+            let timeParts = timeString.split(':');
+            let hours = parseInt(timeParts[0]);
+            let minutes = timeParts[1].split(' ')[0];
+            let ampm = hours >= 12 ? 'م' : 'ص';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            return `${hours}:${minutes} ${ampm}`;
+        }
+
+        async function getPrayerTimes() {
+            try {
+                const response = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Cairo&country=Egypt&method=5');
+                const data = await response.json();
+                const timings = data.data.timings;
+                document.getElementById('Fajr').innerText = convertTo12HourFormat(timings.Fajr);
+                document.getElementById('Dhuhr').innerText = convertTo12HourFormat(timings.Dhuhr);
+                document.getElementById('Asr').innerText = convertTo12HourFormat(timings.Asr);
+                document.getElementById('Maghrib').innerText = convertTo12HourFormat(timings.Maghrib);
+                document.getElementById('Isha').innerText = convertTo12HourFormat(timings.Isha);
+            } catch (error) { console.error("خطأ في جلب مواقيت الصلاة"); }
+        }
+
+        async function setupControlPanel() {
+            try {
+                const response = await fetch('https://api.alquran.cloud/v1/surah');
+                const data = await response.json();
+                const select = document.getElementById('surahSelect');
+                data.data.forEach(surah => {
+                    let option = document.createElement('option');
+                    option.value = surah.number;
+                    option.text = `سورة ${surah.name}`;
+                    select.appendChild(option);
+                });
+            } catch (e) { console.error("خطأ في تحميل أسماء السور", e); }
+
+            const juzSelect = document.getElementById('juzSelect');
+            for(let i = 1; i <= 30; i++) {
+                let option = document.createElement('option');
+                option.value = i;
+                option.text = `الجزء ${i.toLocaleString('ar-EG')}`;
+                juzSelect.appendChild(option);
+            }
+        }
+
+        async function fetchTafseerForPage(pageNumber) {
+            const tafseerContainer = document.getElementById('tafseerContent');
+            tafseerContainer.innerHTML = "جاري تحميل التفسير الميسر لآيات الصفحة...";
+            try {
+                const response = await fetch(`https://api.alquran.cloud/v1/page/${pageNumber}/ar.jalalayn`);
+                const data = await response.json();
+                let tafseerHtml = "";
+                data.data.ayahs.forEach(ayah => {
+                    tafseerHtml += `
+                        <div class="tafseer-item">
+                            <span class="tafseer-ayah-num">﴿${ayah.numberInSurah.toLocaleString('ar-EG')}﴾</span>
+                            <span>${ayah.text}</span>
+                        </div>`;
+                });
+                tafseerContainer.innerHTML = tafseerHtml;
+            } catch (error) { tafseerContainer.innerHTML = "تعذر تحميل التفسير حالياً."; }
+        }
+
+        async function renderQuranPage(pageNumber, shouldPlayAfterLoad = false) {
+            currentPage = parseInt(pageNumber);
+            document.getElementById('pageInput').value = currentPage;
+            const pageContent = document.getElementById('quranPageContent');
+            const surahHeader = document.getElementById('surahHeader');
+            const pageDisplay = document.getElementById('pageNumberDisplay');
+            pageContent.innerHTML = "جاري تحميل آيات الذكر الحكيم...";
+            
+            try {
+                const response = await fetch(`https://api.alquran.cloud/v1/page/${currentPage}/quran-uthmani`);
+                const data = await response.json();
+                currentAyahsData = data.data.ayahs;
+                let pageText = "";
+                
+                let activeSurah = currentAyahsData[0].surah;
+                if (targetSurahNumber) {
+                    let foundSurah = currentAyahsData.find(a => a.surah.number == targetSurahNumber);
+                    if (foundSurah) activeSurah = foundSurah.surah;
+                }
+                
+                surahHeader.innerText = `سُورَةُ ${activeSurah.name}`;
+                document.getElementById('surahSelect').value = activeSurah.number;
+
+                currentAyahsData.forEach((ayah, index) => {
+                    if (ayah.numberInSurah === 1 && ayah.surah.number !== 1 && ayah.surah.number !== 9) {
+                        pageText += `<div style='text-align: center; margin: 20px 0; font-weight: bold; color: #5d4037;'>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
+                    }
+                    let text = ayah.text;
+                    if (ayah.numberInSurah === 1 && ayah.surah.number !== 1 && text.startsWith("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ")) {
+                        text = text.replace("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "");
+                    }
+                    pageText += `<span id="ayah-${index}">${text}</span> <span style='color: #8a6d3b; font-size: 20px; font-family: sans-serif;'>﴿${ayah.numberInSurah.toLocaleString('ar-EG')}﴾</span> `;
+                });
+
+                pageContent.innerHTML = pageText;
+                pageDisplay.innerText = `صفحة ${currentPage.toLocaleString('ar-EG')}`;
+                document.getElementById('prevBtn').disabled = (currentPage === 1);
+                document.getElementById('nextBtn').disabled = (currentPage === 604);
+                
+                fetchTafseerForPage(currentPage);
+
+                if (targetSurahNumber) {
+                    let firstIndex = currentAyahsData.findIndex(ayah => ayah.surah.number == targetSurahNumber);
+                    currentAudioIndex = (firstIndex !== -1) ? firstIndex : 0;
+                    targetSurahNumber = null;
+                } else {
+                    currentAudioIndex = 0;
+                }
+
+                playAyahAudio(shouldPlayAfterLoad); 
+            } catch (error) { pageContent.innerHTML = "حدث خطأ أثناء تحميل الصفحة."; }
+        }
+
+        function playAyahAudio(shouldPlay = true) {
+            if (currentAyahsData.length === 0) return;
+            const reciter = document.getElementById('reciterSelect').value;
+            const audioPlayer = document.getElementById('audioPlayer');
+            const allSpans = document.querySelectorAll('.quran-text-flow span');
+            allSpans.forEach(span => span.classList.remove('highlight-ayah'));
+            if (currentAudioIndex >= currentAyahsData.length || currentAudioIndex < 0) return;
+
+            const currentSpan = document.getElementById(`ayah-${currentAudioIndex}`);
+            if (currentSpan) {
+                currentSpan.classList.add('highlight-ayah');
+                currentSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                let activeSurah = currentAyahsData[currentAudioIndex].surah;
+                document.getElementById('surahHeader').innerText = `سُورَةُ ${activeSurah.name}`;
+                document.getElementById('surahSelect').value = activeSurah.number;
+            }
+            const surahNum = String(currentAyahsData[currentAudioIndex].surah.number).padStart(3, '0');
+            const ayahNum = String(currentAyahsData[currentAudioIndex].numberInSurah).padStart(3, '0');
+            
+            audioPlayer.src = `https://everyayah.com/data/${reciter}/${surahNum}${ayahNum}.mp3`;
+            audioPlayer.load();
+            if (shouldPlay) audioPlayer.play().catch(e => {});
+        }
+
+        function skipAyah(direction) {
+            let newIndex = currentAudioIndex + direction;
+            if (newIndex >= 0 && newIndex < currentAyahsData.length) {
+                currentAudioIndex = newIndex;
+                playAyahAudio(true);
+            } else if (newIndex >= currentAyahsData.length) {
+                if (currentPage < 604) { renderQuranPage(currentPage + 1, true); }
+            } else if (newIndex < 0) {
+                if (currentPage > 1) { 
+                    currentPage--;
+                    renderQuranPage(currentPage).then(() => { 
+                        currentAudioIndex = currentAyahsData.length - 1; 
+                        playAyahAudio(true); 
+                    }); 
+                }
+            }
+        }
+
+        document.getElementById('audioPlayer').addEventListener('ended', () => {
+            currentAudioIndex++;
+            if (currentAudioIndex < currentAyahsData.length) {
+                playAyahAudio(true);
+            } else {
+                if (currentPage < 604) { renderQuranPage(currentPage + 1, true); }
+            }
+        });
+
+        function changeReciter() { playAyahAudio(true); }
+        function changePage(direction) { renderQuranPage(currentPage + direction, false); }
+        function jumpToPage(page) { if(page >= 1 && page <= 604) renderQuranPage(page, false); }
+        
+        async function jumpToSurah(surahNumber) {
+            if(!surahNumber) return;
+            targetSurahNumber = surahNumber;
+            const res = await fetch(`https://api.alquran.cloud/v1/surah/${surahNumber}`);
+            const data = await res.json();
+            renderQuranPage(data.data.ayahs[0].page, true);
+        }
+        
+        async function jumpToJuz(juzNumber) {
+            if(!juzNumber) return;
+            const res = await fetch(`https://api.alquran.cloud/v1/juz/${juzNumber}/quran-uthmani`);
+            const data = await res.json();
+            renderQuranPage(data.data.ayahs[0].page, false);
+        }
+
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+
+        function handleCompassClick() {
+            if (isMobileDevice()) {
+                toggleCompassView(true);
+            } else {
+                document.getElementById('pcWarningModal').style.display = 'flex';
+            }
+        }
+
+        function closeWarningModal() { document.getElementById('pcWarningModal').style.display = 'none'; }
+
+        function toggleCompassView(show) {
+            const quranSec = document.getElementById('mainQuranSection');
+            const compassSec = document.getElementById('qiblaScreen');
+            if (show) {
+                quranSec.style.display = 'none';
+                compassSec.style.display = 'block';
+                initCompassSensors();
+            } else {
+                quranSec.style.display = 'block';
+                compassSec.style.display = 'none';
+            }
+        }
+
+        function initCompassSensors() {
+            const needleGroup = document.getElementById('compassNeedleGroup');
+            const display = document.getElementById('angleDisplay');
+
+            if (window.DeviceOrientationEvent) {
+                window.addEventListener('deviceorientationabsolute', (event) => {
+                    let alpha = event.alpha;
+                    if (alpha !== null) {
+                        currentRotation = Math.round(alpha);
+                        needleGroup.style.transform = `rotate(${currentRotation + 135}deg)`;
+                        display.innerText = `الاتجاه الفعلي للجوال: ${currentRotation}°`;
+                    }
+                }, true);
+            }
+        }
+
+        getPrayerTimes();
+        setupControlPanel().then(() => { renderQuranPage(currentPage, false); });
+    </script>
+</body>
+</html>
