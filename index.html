@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MEDO JR 99 ISLAMIC - المصحف الإلكتروني ومواقيت الصلاة</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="favicon.ico">
+    <meta name="theme-color" content="#2e7d32">
+
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2693089227079842"
      crossorigin="anonymous"></script>
     <style>
@@ -618,11 +622,11 @@
 
                 currentAyahsData.forEach((ayah, index) => {
                     if (ayah.numberInSurah === 1 && ayah.surah.number !== 1 && ayah.surah.number !== 9) {
-                        pageText += `<div style='text-align: center; margin: 20px 0; font-weight: bold; color: #5d4037;'>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
+                        pageText += `<div style='text-align: center; margin: 20px 0; font-weight: bold; color: #5d4037;'>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
                     }
                     let text = ayah.text;
-                    if (ayah.numberInSurah === 1 && ayah.surah.number !== 1 && text.startsWith("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ")) {
-                        text = text.replace("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "");
+                    if (ayah.numberInSurah === 1 && ayah.surah.number !== 1 && text.startsWith("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ")) {
+                        text = text.replace("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "");
                     }
                     pageText += `<span id="ayah-${index}">${text}</span> <span style='color: #8a6d3b; font-size: 20px; font-family: sans-serif;'>﴿${ayah.numberInSurah.toLocaleString('ar-EG')}﴾</span> `;
                 });
@@ -744,19 +748,39 @@
             }
         }
 
-        function initCompassSensors() {
+        async function initCompassSensors() {
             const needleGroup = document.getElementById('compassNeedleGroup');
             const display = document.getElementById('angleDisplay');
 
+            if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                try {
+                    const permissionState = await DeviceOrientationEvent.requestPermission();
+                    if (permissionState !== 'granted') {
+                        return;
+                    }
+                } catch (error) {
+                    console.error("خطأ في طلب إذن المستشعرات:", error);
+                }
+            }
+
             if (window.DeviceOrientationEvent) {
-                window.addEventListener('deviceorientationabsolute', (event) => {
-                    let alpha = event.alpha;
-                    if (alpha !== null) {
-                        currentRotation = Math.round(alpha);
-                        needleGroup.style.transform = `rotate(${currentRotation + 135}deg)`;
+                window.addEventListener('deviceorientation', (event) => {
+                    let heading = null;
+
+                    if (event.webkitCompassHeading !== undefined) {
+                        heading = event.webkitCompassHeading;
+                    } else if (event.alpha !== null) {
+                        heading = 360 - event.alpha;
+                    }
+
+                    if (heading !== null) {
+                        currentRotation = Math.round(heading);
+                        needleGroup.style.transform = `rotate(${currentRotation}deg)`;
                         display.innerText = `الاتجاه الفعلي للجوال: ${currentRotation}°`;
                     }
                 }, true);
+            } else {
+                display.innerText = "متصفحك لا يدعم مستشعرات البوصلة.";
             }
         }
 
