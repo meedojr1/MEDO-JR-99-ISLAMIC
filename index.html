@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MEDO JR 99 ISLAMIC - المصحف الإلكتروني ومواقيت الصلاة وقصص الأنبياء</title>
+    <title id="siteTitle">MEDO JR 99 ISLAMIC - المصحف الإلكتروني ومواقيت الصلاة وقصص الأنبياء</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" href="favicon.ico">
     <meta name="theme-color" content="#2e7d32">
@@ -74,10 +74,14 @@
         .header h1 { margin: 0; font-size: 2.3rem; font-family: 'Arial', sans-serif; letter-spacing: 1px; }
         .header p { margin: 8px 0 0 0; opacity: 0.9; font-size: 1.1rem; }
         
-        .dark-mode-btn {
+        .top-controls-group {
             position: absolute;
             top: 20px;
             left: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .top-btn {
             background: rgba(255,255,255,0.2);
             border: 1px solid white;
             color: white;
@@ -88,7 +92,17 @@
             font-size: 14px;
             transition: background 0.2s;
         }
-        .dark-mode-btn:hover { background: rgba(255,255,255,0.4); }
+        .top-btn:hover { background: rgba(255,255,255,0.4); }
+
+        .date-banner {
+            background: rgba(0, 0, 0, 0.25);
+            color: #ffd700;
+            padding: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.05rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
 
         .container {
             max-width: 1000px;
@@ -539,11 +553,11 @@
             .quran-text-flow { line-height: 2.3; }
         }
 
-        .pc-warning-modal {
+        .pc-warning-modal, .adhan-alert-modal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.6);
+            background-color: rgba(0,0,0,0.7);
             z-index: 1000;
             justify-content: center;
             align-items: center;
@@ -697,15 +711,31 @@
 <body>
 
     <div class="header">
-        <button class="dark-mode-btn" onclick="toggleDarkMode()">🌓 الوضع الليلي</button>
+        <div class="top-controls-group">
+            <button class="top-btn" id="langToggleBtn" onclick="toggleLanguage()">🌐 English</button>
+            <button class="top-btn" onclick="toggleDarkMode()">🌓 <span id="txtDarkMode">الوضع الليلي</span></button>
+        </div>
         <h1>MEDO JR 99 ISLAMIC</h1>
-        <p>بوابتك اليومية لمواقيت الصلاة والقرآن الكريم والأذكار وقصص الأنبياء</p>
+        <p id="headerSub">بوابتك اليومية لمواقيت الصلاة والقرآن الكريم والأذكار وقصص الأنبياء</p>
+    </div>
+
+    <div class="date-banner" id="dateBannerDisplay">
+        جاري تحميل التاريخ...
+    </div>
+
+    <div id="adhanAlertModal" class="adhan-alert-modal">
+        <div class="modal-content">
+            <h3 id="adhanAlertTitle">🕌 حان الآن وقت الصلاة</h3>
+            <p id="adhanAlertText">حان وقت صلاة الفجر، تقبل الله صلاتكم.</p>
+            <audio id="adhanAudioPlayer" src="https://www.islamcan.com/audio/adhan/azan1.mp3"></audio>
+            <button class="modal-close-btn" onclick="closeAdhanModal()">إيقاف الأذان وإغلاق</button>
+        </div>
     </div>
 
     <div id="pcWarningModal" class="pc-warning-modal">
         <div class="modal-content">
-            <h3>🧭 تنبيه اتجاه القبلة</h3>
-            <p>يستحسن الدخول بالهاتف لتتمتع بتجربة أحسن وبوصلة حقيقية دقيقة.</p>
+            <h3 id="compassWarningTitle">🧭 تنبيه اتجاه القبلة</h3>
+            <p id="compassWarningText">يستحسن الدخول بالهاتف لتتمتع بتجربة أحسن وبوصلة حقيقية دقيقة.</p>
             <button class="modal-close-btn" onclick="closeWarningModal()">حسناً، الاستمرار</button>
         </div>
     </div>
@@ -717,56 +747,56 @@
                 <h3 id="dailyTitle">✨ دعاء اليوم والذكر المبارك</h3>
                 <p id="dailyText">«ربنا آتنا في الدنيا حسنة وفي الآخرة حسنة وقنا عذاب النار»</p>
             </div>
-            <button class="dhikr-refresh-btn" onclick="changeDailyDhikr()">ذكر آخر 🔄</button>
+            <button class="dhikr-refresh-btn" id="refreshDhikrBtn" onclick="changeDailyDhikr()">ذكر آخر 🔄</button>
         </div>
 
         <div class="section-prayer">
             <h2>
-                <span>مواقيت الصلاة اليوم (القاهرة)</span>
+                <span id="prayerSectionTitle">مواقيت الصلاة اليوم (القاهرة)</span>
                 <span id="nextPrayerCountdown" class="next-prayer-countdown">جاري حساب الوقت المتبقي...</span>
             </h2>
             <div class="prayer-grid">
-                <div class="prayer-card"><span>الفجر</span><span id="Fajr">-</span></div>
-                <div class="prayer-card"><span>الظهر</span><span id="Dhuhr">-</span></div>
-                <div class="prayer-card"><span>العصر</span><span id="Asr">-</span></div>
-                <div class="prayer-card"><span>المغرب</span><span id="Maghrib">-</span></div>
-                <div class="prayer-card"><span>العشاء</span><span id="Isha">-</span></div>
+                <div class="prayer-card"><span id="lblFajr">الفجر</span><span id="Fajr">-</span></div>
+                <div class="prayer-card"><span id="lblDhuhr">الظهر</span><span id="Dhuhr">-</span></div>
+                <div class="prayer-card"><span id="lblAsr">العصر</span><span id="Asr">-</span></div>
+                <div class="prayer-card"><span id="lblMaghrib">المغرب</span><span id="Maghrib">-</span></div>
+                <div class="prayer-card"><span id="lblIsha">العشاء</span><span id="Isha">-</span></div>
             </div>
         </div>
 
         <div class="main-tabs">
-            <button class="tab-btn active" onclick="switchMainTab('quran')">📖 المصحف الشريف</button>
-            <button class="tab-btn" onclick="switchMainTab('azkar')">📿 الأذكار والمسبحة</button>
-            <button class="tab-btn" onclick="switchMainTab('hadith')">📜 الأربعين النووية</button>
-            <button class="tab-btn" onclick="switchMainTab('prophets')">📖 قصص الأنبياء</button>
+            <button class="tab-btn active" id="tabQuran" onclick="switchMainTab('quran')">📖 المصحف الشريف</button>
+            <button class="tab-btn" id="tabAzkar" onclick="switchMainTab('azkar')">📿 الأذكار والمسبحة</button>
+            <button class="tab-btn" id="tabHadith" onclick="switchMainTab('hadith')">📜 الأربعين النووية</button>
+            <button class="tab-btn" id="tabProphets" onclick="switchMainTab('prophets')">📖 قصص الأنبياء</button>
         </div>
 
         <div id="mainQuranSection">
             <div class="quran-control-panel">
                 <div class="control-row">
                     <div class="control-group">
-                        <span>السورة:</span>
+                        <span id="lblSurah">السورة:</span>
                         <select id="surahSelect" onchange="jumpToSurah(this.value)"></select>
                     </div>
                     <div class="control-group">
-                        <span>الصفحة:</span>
+                        <span id="lblPage">الصفحة:</span>
                         <input type="number" id="pageInput" min="1" max="604" value="1" style="width: 55px; text-align: center;" onchange="jumpToPage(this.value)">
                     </div>
                     <div class="control-group">
-                        <span>الجزء:</span>
+                        <span id="lblJuz">الجزء:</span>
                         <select id="juzSelect" onchange="jumpToJuz(this.value)"></select>
                     </div>
                     <div class="control-group">
-                        <span>الخط:</span>
+                        <span id="lblFont">الخط:</span>
                         <button class="font-size-btn" onclick="adjustFontSize(2)" title="تكبير الخط">+</button>
                         <button class="font-size-btn" onclick="adjustFontSize(-2)" title="تصغير الخط">-</button>
                     </div>
-                    <button class="compass-toggle-btn" onclick="handleCompassClick()">🧭 اتجاه القبلة</button>
+                    <button class="compass-toggle-btn" id="btnQibla" onclick="handleCompassClick()">🧭 اتجاه القبلة</button>
                 </div>
 
                 <div class="control-row">
                     <div class="control-group">
-                        <span>القارئ:</span>
+                        <span id="lblReciter">القارئ:</span>
                         <select id="reciterSelect" onchange="changeReciter()">
                             <option value="Ahmed_Neana_128kbps">الشيخ أحمد نعينع</option>
                             <option value="Mahmoud_Ali_Al_Banna_32kbps">الشيخ محمود علي البنا (مرتل)</option>
@@ -796,7 +826,7 @@
             </div>
 
             <div class="tafseer-section">
-                <h3>📖 التفسير الميسر لآيات الصفحة:</h3>
+                <h3 id="tafseerSectionTitle">📖 التفسير الميسر لآيات الصفحة:</h3>
                 <div id="tafseerContent">جاري تحميل التفسير الميسر...</div>
             </div>
 
@@ -807,48 +837,48 @@
         </div>
 
         <div id="azkarSection" class="content-section">
-            <h2>📿 الأذكار والمسبحة الإلكترونية</h2>
+            <h2 id="azkarTitleHeader">📿 الأذكار والمسبحة الإلكترونية</h2>
             
             <div class="masbaha-box">
-                <h3>المسبحة الإلكترونية التفاعلية</h3>
-                <p style="margin: 5px 0; color: var(--modal-text);">اضغط للعد والتسبيح المستمر</p>
+                <h3 id="masbahaHeaderTitle">المسبحة الإلكترونية التفاعلية</h3>
+                <p id="masbahaSubText" style="margin: 5px 0; color: var(--modal-text);">اضغط للعد والتسبيح المستمر</p>
                 <div id="masbahaCount" class="masbaha-counter-display">0</div>
                 <br>
                 <div class="masbaha-btn-group">
-                    <button class="masbaha-click-btn" onclick="incrementMasbaha()">تسبيح 👆</button>
-                    <button class="masbaha-reset-btn" onclick="resetMasbaha()">تصفير ↺</button>
+                    <button class="masbaha-click-btn" id="masbahaClickBtn" onclick="incrementMasbaha()">تسبيح 👆</button>
+                    <button class="masbaha-reset-btn" id="masbahaResetBtn" onclick="resetMasbaha()">تصفير ↺</button>
                 </div>
             </div>
 
             <div class="azkar-card">
-                <h4>أذكار الصباح</h4>
-                <p>«اللهم أنت ربي لا إله إلا أنت، خلقتني وأنا عبدك، وأنا على عهدك ووعدك ما استطعت...»</p>
-                <button class="counter-btn" onclick="updateCounter(this, 3)">العدد الباقي: <span class="count">3</span></button>
+                <h4 id="morningAzkarTitle">أذكار الصباح</h4>
+                <p id="morningAzkarText">«اللهم أنت ربي لا إله إلا أنت، خلقتني وأنا عبدك، وأنا على عهدك ووعدك ما استطعت...»</p>
+                <button class="counter-btn" onclick="updateCounter(this, 3)"><span class="counterLbl">العدد الباقي:</span> <span class="count">3</span></button>
             </div>
             <div class="azkar-card">
-                <h4>أذكار المساء</h4>
-                <p>«أمسينا وأمسى الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له...»</p>
-                <button class="counter-btn" onclick="updateCounter(this, 3)">العدد الباقي: <span class="count">3</span></button>
+                <h4 id="eveningAzkarTitle">أذكار المساء</h4>
+                <p id="eveningAzkarText">«أمسينا وأمسى الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له...»</p>
+                <button class="counter-btn" onclick="updateCounter(this, 3)"><span class="counterLbl">العدد الباقي:</span> <span class="count">3</span></button>
             </div>
         </div>
 
         <div id="hadithSection" class="content-section">
-            <h2>📜 الأربعين النووية كاملة</h2>
+            <h2 id="hadithTitleHeader">📜 الأربعين النووية كاملة</h2>
             <div id="hadithListContainer"></div>
         </div>
 
         <div id="prophetsSection" class="content-section">
-            <h2>📖 قصص الأنبياء (السيرة العطرة)</h2>
+            <h2 id="prophetsTitleHeader">📖 قصص الأنبياء (السيرة العطرة)</h2>
             <div id="prophetsViewContainer">
-                <p style="text-align: center; color: var(--modal-text); margin-bottom: 15px;">اختر نبياً لقراءة قصته المباركة:</p>
+                <p id="prophetsSubText" style="text-align: center; color: var(--modal-text); margin-bottom: 15px;">اختر نبياً لقراءة قصته المباركة:</p>
                 <div class="prophets-grid" id="prophetsGrid"></div>
             </div>
             <div id="singleProphetView" style="display: none;"></div>
         </div>
 
         <div id="qiblaScreen" class="qibla-screen">
-            <h2>🧭 بوصلة اتجاه القِبلة الذكية</h2>
-            <p>قم بتدوير الشاشة ليتطابق السهم البرتقالي الحاد ومجسم الكعبة 🕋 مع اتجاه الشمال النقي (N)</p>
+            <h2 id="qiblaScreenTitle">🧭 بوصلة اتجاه القِبلة الذكية</h2>
+            <p id="qiblaScreenSub">قم بتدوير الشاشة ليتطابق السهم البرتقالي الحاد ومجسم الكعبة 🕋 مع اتجاه الشمال النقي (N)</p>
             
             <div class="compass-container" id="compassContainer">
                 <div class="compass-border-ticks"></div>
@@ -878,12 +908,13 @@
             </div>
             
             <p id="angleDisplay" style="color: #2e7d32; font-weight: bold; font-size: 18px;">الزاوية المقدرة: 0°</p>
-            <button class="close-compass-btn" onclick="toggleCompassView(false)">← العودة للمصحف الشريف</button>
+            <button class="close-compass-btn" id="closeCompassBtn" onclick="toggleCompassView(false)">← العودة للمصحف الشريف</button>
         </div>
 
     </div>
 
     <script>
+        let currentLang = localStorage.getItem('medo_islamic_lang') || 'ar';
         let currentPage = parseInt(localStorage.getItem('medo_islamic_page')) || 1;
         let currentFontSize = parseInt(localStorage.getItem('medo_quran_font_size')) || 28;
         let masbahaValue = 0;
@@ -892,9 +923,198 @@
         let currentRotation = 0;
         let targetSurahNumber = null;
         let prayerTimesData = null;
+        let lastAlertedPrayerMinute = "";
 
-        // تطبيق حجم الخط المخزن مسبقاً
+        // القواميس للغة العربية والإنجليزية
+        const translations = {
+            ar: {
+                siteTitle: "MEDO JR 99 ISLAMIC - المصحف الإلكتروني ومواقيت الصلاة وقصص الأنبياء",
+                headerSub: "بوابتك اليومية لمواقيت الصلاة والقرآن الكريم والأذكار وقصص الأنبياء",
+                txtDarkMode: "الوضع الليلي",
+                langToggleBtn: "🌐 English",
+                prayerSectionTitle: "مواقيت الصلاة اليوم (القاهرة)",
+                lblFajr: "الفجر",
+                lblDhuhr: "الظهر",
+                lblAsr: "العصر",
+                lblMaghrib: "المغرب",
+                lblIsha: "العشاء",
+                tabQuran: "📖 المصحف الشريف",
+                tabAzkar: "📿 الأذكار والمسبحة",
+                tabHadith: "📜 الأربعين النووية",
+                tabProphets: "📖 قصص الأنبياء",
+                lblSurah: "السورة:",
+                lblPage: "الصفحة:",
+                lblJuz: "الجزء:",
+                lblFont: "الخط:",
+                btnQibla: "🧭 اتجاه القبلة",
+                lblReciter: "القارئ:",
+                tafseerSectionTitle: "📖 التفسير الميسر لآيات الصفحة:",
+                prevBtn: "◄ الصفحة السابقة",
+                nextBtn: "الصفحة التالية ►",
+                azkarTitleHeader: "📿 الأذكار والمسبحة الإلكترونية",
+                masbahaHeaderTitle: "المسبحة الإلكترونية التفاعلية",
+                masbahaSubText: "اضغط للعد والتسبيح المستمر",
+                masbahaClickBtn: "تسبيح 👆",
+                masbahaResetBtn: "تصفير ↺",
+                morningAzkarTitle: "أذكار الصباح",
+                morningAzkarText: "«اللهم أنت ربي لا إله إلا أنت، خلقتني وأنا عبدك، وأنا على عهدك ووعدك ما استطعت...»",
+                eveningAzkarTitle: "أذكار المساء",
+                eveningAzkarText: "«أمسينا وأمسى الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له...»",
+                counterLbl: "العدد الباقي:",
+                hadithTitleHeader: "📜 الأربعين النووية كاملة",
+                prophetsTitleHeader: "📖 قصص الأنبياء (السيرة العطرة)",
+                prophetsSubText: "اختر نبياً لقراءة قصته المباركة:",
+                qiblaScreenTitle: "🧭 بوصلة اتجاه القِبلة الذكية",
+                qiblaScreenSub: "قم بتدوير الشاشة ليتطابق السهم البرتقالي الحاد ومجسم الكعبة 🕋 مع اتجاه الشمال النقي (N)",
+                closeCompassBtn: "← العودة للمصحف الشريف",
+                compassWarningTitle: "🧭 تنبيه اتجاه القبلة",
+                compassWarningText: "يستحسن الدخول بالهاتف لتتمتع بتجربة أحسن وبوصلة حقيقية دقيقة.",
+                modalCloseBtn: "حسناً، الاستمرار",
+                dailyTitle: "✨ دعاء اليوم والذكر المبارك",
+                refreshDhikrBtn: "ذكر آخر 🔄",
+                adhanAlertTitle: "🕌 حان الآن وقت الصلاة",
+                stopAdhanBtn: "إيقاف الأذان وإغلاق"
+            },
+            en: {
+                siteTitle: "MEDO JR 99 ISLAMIC - Digital Quran, Prayer Times & Prophets Stories",
+                headerSub: "Your daily gateway to prayer times, Holy Quran, Azkar and Prophets stories",
+                txtDarkMode: "Dark Mode",
+                langToggleBtn: "🌐 العربية",
+                prayerSectionTitle: "Today's Prayer Times (Cairo)",
+                lblFajr: "Fajr",
+                lblDhuhr: "Dhuhr",
+                lblAsr: "Asr",
+                lblMaghrib: "Maghrib",
+                lblIsha: "Isha",
+                tabQuran: "📖 Holy Quran",
+                tabAzkar: "📿 Azkar & Tasabeeh",
+                tabHadith: "📜 40 Hadith Nawawi",
+                tabProphets: "📖 Prophets Stories",
+                lblSurah: "Surah:",
+                lblPage: "Page:",
+                lblJuz: "Juz:",
+                lblFont: "Font:",
+                btnQibla: "🧭 Qibla Direction",
+                lblReciter: "Reciter:",
+                tafseerSectionTitle: "📖 Tafseer Al-Jalalayn for this page:",
+                prevBtn: "◄ Previous Page",
+                nextBtn: "Next Page ►",
+                azkarTitleHeader: "📿 Azkar & Interactive Rosary",
+                masbahaHeaderTitle: "Interactive Electronic Rosary",
+                masbahaSubText: "Click to count and praise continuously",
+                masbahaClickBtn: "Praise 👆",
+                masbahaResetBtn: "Reset ↺",
+                morningAzkarTitle: "Morning Azkar",
+                morningAzkarText: "«O Allah, You are my Lord, none has the right to be worshipped except You...»",
+                eveningAzkarTitle: "Evening Azkar",
+                eveningAzkarText: "«We have reached the evening and at this very time unto Allah belongs all sovereignty...»",
+                counterLbl: "Remaining:",
+                hadithTitleHeader: "📜 The 40 Hadith Nawawi Complete",
+                prophetsTitleHeader: "📖 Prophets Stories (Blessed Seerah)",
+                prophetsSubText: "Choose a prophet to read his blessed story:",
+                qiblaScreenTitle: "🧭 Smart Qibla Compass",
+                qiblaScreenSub: "Rotate your device to align the sharp orange arrow and Kaaba model 🕋 with True North (N)",
+                closeCompassBtn: "← Back to Holy Quran",
+                compassWarningTitle: "🧭 Qibla Compass Notice",
+                compassWarningText: "It is recommended to use a smartphone for an accurate compass experience.",
+                modalCloseBtn: "Okay, Continue",
+                dailyTitle: "✨ Daily Supplication & Remembrance",
+                refreshDhikrBtn: "Another 🔄",
+                adhanAlertTitle: "🕌 It is time for Prayer",
+                stopAdhanBtn: "Stop Adhan & Close"
+            }
+        };
+
+        function toggleLanguage() {
+            currentLang = (currentLang === 'ar') ? 'en' : 'ar';
+            localStorage.setItem('medo_islamic_lang', currentLang);
+            applyLanguage();
+        }
+
+        function applyLanguage() {
+            const t = translations[currentLang];
+            document.documentElement.lang = currentLang;
+            document.documentElement.dir = (currentLang === 'ar') ? 'rtl' : 'ltr';
+
+            document.getElementById('siteTitle').innerText = t.siteTitle;
+            document.getElementById('headerSub').innerText = t.headerSub;
+            document.getElementById('langToggleBtn').innerText = t.langToggleBtn;
+            document.getElementById('prayerSectionTitle').innerText = t.prayerSectionTitle;
+            document.getElementById('lblFajr').innerText = t.lblFajr;
+            document.getElementById('lblDhuhr').innerText = t.lblDhuhr;
+            document.getElementById('lblAsr').innerText = t.lblAsr;
+            document.getElementById('lblMaghrib').innerText = t.lblMaghrib;
+            document.getElementById('lblIsha').innerText = t.lblIsha;
+
+            document.getElementById('tabQuran').innerText = t.tabQuran;
+            document.getElementById('tabAzkar').innerText = t.tabAzkar;
+            document.getElementById('tabHadith').innerText = t.tabHadith;
+            document.getElementById('tabProphets').innerText = t.tabProphets;
+
+            document.getElementById('lblSurah').innerText = t.lblSurah;
+            document.getElementById('lblPage').innerText = t.lblPage;
+            document.getElementById('lblJuz').innerText = t.lblJuz;
+            document.getElementById('lblFont').innerText = t.lblFont;
+            document.getElementById('btnQibla').innerText = t.btnQibla;
+            document.getElementById('lblReciter').innerText = t.lblReciter;
+            document.getElementById('tafseerSectionTitle').innerText = t.tafseerSectionTitle;
+            document.getElementById('prevBtn').innerText = t.prevBtn;
+            document.getElementById('nextBtn').innerText = t.nextBtn;
+
+            document.getElementById('azkarTitleHeader').innerText = t.azkarTitleHeader;
+            document.getElementById('masbahaHeaderTitle').innerText = t.masbahaHeaderTitle;
+            document.getElementById('masbahaSubText').innerText = t.masbahaSubText;
+            document.getElementById('masbahaClickBtn').innerText = t.masbahaClickBtn;
+            document.getElementById('masbahaResetBtn').innerText = t.masbahaResetBtn;
+            document.getElementById('morningAzkarTitle').innerText = t.morningAzkarTitle;
+            document.getElementById('morningAzkarText').innerText = t.morningAzkarText;
+            document.getElementById('eveningAzkarTitle').innerText = t.eveningAzkarTitle;
+            document.getElementById('eveningAzkarText').innerText = t.eveningAzkarText;
+            
+            document.querySelectorAll('.counterLbl').forEach(el => el.innerText = t.counterLbl);
+
+            document.getElementById('hadithTitleHeader').innerText = t.hadithTitleHeader;
+            document.getElementById('prophetsTitleHeader').innerText = t.prophetsTitleHeader;
+            document.getElementById('prophetsSubText').innerText = t.prophetsSubText;
+
+            document.getElementById('qiblaScreenTitle').innerText = t.qiblaScreenTitle;
+            document.getElementById('qiblaScreenSub').innerText = t.qiblaScreenSub;
+            document.getElementById('closeCompassBtn').innerText = t.closeCompassBtn;
+            document.getElementById('compassWarningTitle').innerText = t.compassWarningTitle;
+            document.getElementById('compassWarningText').innerText = t.compassWarningText;
+
+            document.getElementById('dailyTitle').innerText = t.dailyTitle;
+            document.getElementById('refreshDhikrBtn').innerText = t.refreshDhikrBtn;
+            document.getElementById('adhanAlertTitle').innerText = t.adhanAlertTitle;
+        }
+
+        // جلب التاريخ الهجري والميلادي الحقيقي
+        async function fetchIslamicDate() {
+            try {
+                const today = new Date();
+                let dd = String(today.getDate()).padStart(2, '0');
+                let mm = String(today.getMonth() + 1).padStart(2, '0');
+                let yyyy = today.getFullYear();
+                let dateStr = `${dd}-${mm}-${yyyy}`;
+
+                const response = await fetch(`https://api.aladhan.com/v1/gregorianToHijri?date=${dateStr}`);
+                const data = await response.json();
+                let h = data.data.hijri;
+                let g = data.data.gregorian;
+
+                let bannerText = currentLang === 'ar' 
+                    ? `📅 التاريخ الهجري: ${h.day} ${h.month.ar} ${h.year} هـ  |  الميلادي: ${g.date}`
+                    : `📅 Hijri Date: ${h.day} ${h.month.en} ${h.year} AH  |  Gregorian: ${g.date}`;
+                
+                document.getElementById('dateBannerDisplay').innerText = bannerText;
+            } catch (err) {
+                document.getElementById('dateBannerDisplay').innerText = "📅 التاريخ الهجري والميلادي";
+            }
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
+            applyLanguage();
+            fetchIslamicDate();
             document.getElementById('quranPageContent').style.fontSize = currentFontSize + 'px';
             loadFullHadith();
             loadProphetsGrid();
@@ -933,7 +1153,7 @@
             { title: "الحديث الخامس والعشرين: ذهب أهل الدثور بالاجور", text: "عن أبي ذر رضي الله عنه أيضاً أن ناساً من أصحاب النبي صلى الله عليه وسلم قالوا للنبي صلى الله عليه وسلم: يا رسول الله ذهب أهل الدثور بالأجور، يصلون كما نصوم ويصومون كما نصوم ويتصدقون بفضول أموالهم...»." },
             { title: "الحديث السادس والعشرين: كل سلامى من الناس عليه صدقة", text: "عن أبي هريرة رضي الله عنه قال: قال رسول الله صلى الله عليه وسلم: «كل سلامى من الناس عليه صدقة كل يوم طلعت فيه الشمس، تعدل بين اثنين صدقة...»." },
             { title: "الحديث السابع والعشرين: البر حسن الخلق", text: "عن النواس بن سمعان رضي الله عنه عن النبي صلى الله عليه وسلم قال: «البر حسن الخلق، والإثم ما حاك في نفسك وكرهت أن يطلع عليه الناس»." },
-            { title: "الحديث الثامن والعشرين: وصيتي تقوى الله والسمع والطاعة", text: "عن أبي نجيح العرباض بن سارية رضي الله عنه قال: وعظنا رسول الله صلى الله عليه وسلم موعظة وجلت منها القلوب وذرفست منها العيون، فقلنا: يا رسول الله كأنها موعظة مودع فأوصنا قال: «وصيتي بتقوى الله والسمع والطاعة...»." },
+            { title: "الحديث الثامن والعشرين: وصيتي تقوى الله والسمع والطاعة", text: "عن أبي نجيح العرباض بن سارية رضي الله عنه قال: وعظنا رسول الله صلى الله عليه وسلم موعظة وجلت منها القلوب وذرفت منها العيون، فقلنا: يا رسول الله كأنها موعظة مودع فأوصنا قال: «وصيتي بتقوى الله والسمع والطاعة...»." },
             { title: "الحديث التاسع والعشرين: باب أبواب الخير", text: "عن معاذ بن جبل رضي الله عنه قال: قلت: يا رسول الله أخبرني بعمل يدخلني الجنة ويباعدني عن النار... فقال: «لقد سألت عن عظيم وإنه ليسير على من يسره الله عليه: تعبد الله لا تشرك به شيئاً وتقيم الصلاة...»." },
             { title: "الحديث الثلاثين: إن الله فرض فرائض فلا تضيعوها", text: "عن أبي ثعلبة الخشني جرثوم بن نشر رضي الله عنه عن رسول الله صلى الله عليه وسلم قال: «إن الله فرض فرائض فلا تضيعوها، وحد حدوداً فلا تعتدوها، وسكت عن أشياء رحمة لكم غير نسيان فلا تبحثوا عنها»." },
             { title: "الحديث الحادي والثلاثين: ازهد في الدنيا يحبك الله", text: "عن أبي العباس سهل بن سعد الساعدي رضي الله عنه قال: جاء رجل إلى النبي صلى الله عليه وسلم فقال: يا رسول الله دلني على عمل إذا عملته أحبني الله وأحبني الناس؟ فقال: «ازهد في الدنيا يحبك الله، وازهد فيما في أيدي الناس يحبك الناس»." },
@@ -1111,7 +1331,7 @@
                 text: `1. المولد والنشأة (قبل البعثة)
 - المولد: وُلِد محمد بن عبد الله في مكة المكرمة في "عام الفيل" (حوالي سنة 571 ميلادية)، ويتصل نسبه بالنبي إسماعيل بن إبراهيم عليهما السلام.
 - اليتْم: توفي والده عبد الله قبل ولادته، وتوفيت والدته آمنة بنت وهب وهو في سن السادسة، فتولى كفالته جده عبد المطلب، ثم عمه أبو طالب.
-- الأمانة والصدق: عَرفه أهل مكة منذ صغره بألقاب حسنة تدل على طهارة سيرته، مثل "الصادق" و"الأمين"، وعمل في شبابه برعاية الأغنام والتجارة.
+- الأمانة والصدق: عَرفه أهل مكة منذ صغره بألقاب حسنة تدل على طهارة سيرته، مثل "الصادق" و"الأمين", وعمل في شبابه برعاية الأغنام والتجارة.
 
 2. البعثة النبوية ونزول الوحي
 - التعبد في غار حراء: كان النبي صلى الله عليه وسلم يخلو بنفسه في غار حراء يتفكر في ملكوت السماوات والأرض.
@@ -1282,12 +1502,27 @@
             if (!prayerTimesData) return;
             const now = new Date();
             const prayers = [
-                { name: 'الفجر', time: prayerTimesData.Fajr },
-                { name: 'الظهر', time: prayerTimesData.Dhuhr },
-                { name: 'العصر', time: prayerTimesData.Asr },
-                { name: 'المغرب', time: prayerTimesData.Maghrib },
-                { name: 'العشاء', time: prayerTimesData.Isha }
+                { name: 'الفجر', timeKey: 'Fajr', time: prayerTimesData.Fajr },
+                { name: 'الظهر', timeKey: 'Dhuhr', time: prayerTimesData.Dhuhr },
+                { name: 'العصر', timeKey: 'Asr', time: prayerTimesData.Asr },
+                { name: 'المغرب', timeKey: 'Maghrib', time: prayerTimesData.Maghrib },
+                { name: 'العشاء', timeKey: 'Isha', time: prayerTimesData.Isha }
             ];
+
+            let currentMinuteString = `${now.getHours()}:${now.getMinutes()}`;
+            
+            for (let p of prayers) {
+                let [hours, minutes] = p.time.split(':').map(Number);
+                let pDate = new Date();
+                pDate.setHours(hours, minutes, 0, 0);
+
+                // فحص دقيق لدخول وقت أي صلاة (فجر، ظهر، عصر، مغرب، عشاء)
+                let pMinuteStr = `${hours}:${minutes}`;
+                if (now.getHours() === hours && now.getMinutes() === minutes && lastAlertedPrayerMinute !== pMinuteStr) {
+                    lastAlertedPrayerMinute = pMinuteStr;
+                    triggerAdhanAlert(p.name);
+                }
+            }
 
             let nextPrayer = null;
             let nextPrayerTimeDate = null;
@@ -1318,6 +1553,23 @@
             let s = Math.floor((diff % (1000 * 60)) / 1000);
 
             document.getElementById('nextPrayerCountdown').innerText = `المتبقي على صلاة ${nextPrayer}: ${h}س ${m}د ${s}ث`;
+        }
+
+        function triggerAdhanAlert(prayerName) {
+            const modal = document.getElementById('adhanAlertModal');
+            const audio = document.getElementById('adhanAudioPlayer');
+            document.getElementById('adhanAlertText').innerText = `حان الآن وقت صلاة ${prayerName}، تقبل الله طاعتكم.`;
+            modal.style.display = 'flex';
+            audio.currentTime = 0;
+            audio.play().catch(e => { console.log("تطلب التفاعل لتشغيل الصوت تلقائياً"); });
+        }
+
+        function closeAdhanModal() {
+            const modal = document.getElementById('adhanAlertModal');
+            const audio = document.getElementById('adhanAudioPlayer');
+            audio.pause();
+            audio.currentTime = 0;
+            modal.style.display = 'none';
         }
 
         async function setupControlPanel() {
