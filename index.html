@@ -30,7 +30,43 @@
             --tab-bg: #e0d9c1;
             --tab-active-bg: #2e7d32;
         }
+/* ضبط العرض العام للموقع ليناسب شاشات الهواتف */
+body {
+    width: 100%;
+    overflow-x: hidden; /* لمنع التمرير الأفقي المزعج */
+    margin: 0;
+    padding: 0;
+}
 
+.container {
+    width: 95%;
+    max-width: 600px; /* يجعل الموقع عريضاً ومرابحاً على الموبايل وصغيراً بحد معقول على الكمبيوتر */
+    margin: 0 auto;
+    padding: 10px;
+}
+
+/* ضبط جدول مواقيت الصلاة ليتلائم مع الشاشات الصغيرة */
+.prayer-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* عرض الصلاة في عمودين على الموبايل لتقليل الطول والضيق */
+    gap: 10px;
+}
+
+/* ضبط الأزرار الرئيسية والتحكم لتأخذ المساحة المناسبة */
+.main-tabs, .control-panel {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* ضبط حجم نص المصحف على الهواتف */
+.quran-text {
+    font-size: 22px !important;
+    line-height: 2.2;
+    text-align: justify;
+    padding: 0 5px;
+}
         body.dark-mode {
             --bg-gradient: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), url('bg.jpg');
             --header-bg: rgba(20, 50, 22, 0.95);
@@ -719,9 +755,9 @@
         <p id="headerSub">بوابتك اليومية لمواقيت الصلاة والقرآن الكريم والأذكار وقصص الأنبياء</p>
     </div>
 
-    <div class="date-banner" id="dateBannerDisplay">
-        جاري تحميل التاريخ...
-    </div>
+    <div class="date-banner" id="currentHijriGregorianDate">
+    📅 ...جاري تحميل التاريخ
+</div>
 
     <div id="adhanAlertModal" class="adhan-alert-modal">
         <div class="modal-content">
@@ -763,6 +799,20 @@
                 <div class="prayer-card"><span id="lblIsha">العشاء</span><span id="Isha">-</span></div>
             </div>
         </div>
+<div class="hadith-card countdown-card" style="text-align: center; border: 2px solid #bfa15f; border-radius: 12px; padding: 20px; margin-bottom: 25px; background: var(--control-group-bg);">
+    <h4 style="color: #bfa15f; margin-bottom: 10px; font-size: 1.2rem;">⏳ الأيام الباقية لشهر رمضان المبارك</h4>
+    <p id="ramadanCountdown" style="font-size: 16px; font-weight: bold; margin-bottom: 15px; color: var(--container-text);">جاري حساب الأيام...</p>
+</div>
+        <div class="hadith-card radio-card" style="text-align: center; border: 2px solid #bfa15f; border-radius: 12px; padding: 20px; margin-bottom: 25px; background: var(--control-group-bg);">
+    <h4 style="color: #bfa15f; margin-bottom: 10px; font-size: 1.2rem;">📻 إذاعة القرآن الكريم (بث مباشر)</h4>
+    <p style="font-size: 14px; margin-bottom: 15px; color: var(--container-text);">استمع إلى البث المباشر للقرآن الكريم على مدار الساعة.</p>
+    
+    <audio id="quranRadioPlayer" src="https://stream.radiojar.com/8s5u5tpdtwzuv" preload="none"></audio>
+    
+    <div style="display: flex; justify-content: center; gap: 10px; align-items: center;">
+        <button id="radioPlayBtn" onclick="toggleRadio()" class="action-icon-btn" style="background-color: #bfa15f; color: #fff; padding: 10px 25px; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 15px;">تشغيل البث 🔊</button>
+    </div>
+</div>
 
         <div class="main-tabs">
             <button class="tab-btn active" id="tabQuran" onclick="switchMainTab('quran')">📖 المصحف الشريف</button>
@@ -1809,6 +1859,63 @@
 
         getPrayerTimes();
         setupControlPanel().then(() => { renderQuranPage(currentPage, false); });
+    // التحكم في تشغيل وإيقاف راديو القرآن الكريم
+function toggleRadio() {
+    const radioPlayer = document.getElementById('quranRadioPlayer');
+    const playBtn = document.getElementById('radioPlayBtn');
+
+    if (radioPlayer.paused) {
+        radioPlayer.play().then(() => {
+            playBtn.innerText = "إيقاف البث ⏸";
+            playBtn.style.backgroundColor = "#c0392b";
+        }).catch(error => {
+            alert("عذراً، تعذر تشغيل البث المباشر. تأكد من اتصال الإنترنت.");
+        });
+    } else {
+        radioPlayer.pause();
+        playBtn.innerText = "تشغيل البث 🔊";
+        playBtn.style.backgroundColor = "#bfa15f";
+    }
+}
+// حساب الأيام المتبقية حتى شهر رمضان المبارك
+function updateRamadanCountdown() {
+    const countdownElement = document.getElementById('ramadanCountdown');
+    if (!countdownElement) return;
+
+    // تاريخ رمضان القادم (يمكنك تعديله لاحقاً حسب الرؤية)
+    const ramadanDate = new Date('February 8, 2027 00:00:00').getTime(); 
+    const now = new Date().getTime();
+    const distance = ramadanDate - now;
+
+    if (distance < 0) {
+        countdownElement.innerHTML = "كل عام وأنتم بخير، بلغنا الله وإياكم رمضان!";
+        return;
+    }
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    
+    countdownElement.innerHTML = `باقي على شهر رمضان المبارك: <span style="color: #bfa15f;">${days} يوم</span> و <span style="color: #bfa15f;">${hours} ساعة</span>`;
+}
+
+// تشغيل الدالة وتحديثها تلقائياً
+updateRamadanCountdown();
+setInterval(updateRamadanCountdown, 3600000);    
+function displayCurrentDate() {
+    const dateElement = document.getElementById('currentHijriGregorianDate');
+    if (!dateElement) return;
+
+    const today = new Date();
+    const optionsGregorian = { year: 'numeric', month: 'long', day: 'numeric', calendar: 'gregory' };
+    const gregorianString = today.toLocaleDateString('ar-EG', optionsGregorian);
+
+    const optionsHijri = { year: 'numeric', month: 'long', day: 'numeric', calendar: 'islamic-umalqura' };
+    const hijriString = today.toLocaleDateString('ar-EG-u-ca-islamic-umalqura', optionsHijri);
+
+    dateElement.innerHTML = `📅 ${hijriString} هـ الموافق ${gregorianString} م`;
+}
+
+displayCurrentDate();    
     </script>
 </body>
 </html>
