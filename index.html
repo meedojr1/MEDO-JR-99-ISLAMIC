@@ -1958,11 +1958,11 @@ displayCurrentDate();
           deferredPrompt.prompt();
           const { outcome } = await deferredPrompt.userChoice;
           if (outcome === 'accepted') {
-            console.log('المستخدم وافق على تثبيت التطبيق');
+            console.log('App accepted');
           }
           deferredPrompt = null;
         } else {
-          alert('التطبيق جاهز أو يمكنك التثبيت يدوياً من إعدادات المتصفح (إضافة إلى الشاشة الرئيسية).');
+          alert('App is ready or you can install it manually from browser menu.');
         }
       });
     }
