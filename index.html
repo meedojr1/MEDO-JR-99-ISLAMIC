@@ -1940,11 +1940,10 @@ function displayCurrentDate() {
     dateElement.innerHTML = `📅 ${hijriString} هـ الموافق ${gregorianString} م`;
 }
 
-displayCurrentDate();
-    
-    // --- كود تثبيت تطبيق الـ PWA ---
+displayCurrentDate
+
+const installBtn = document.getElementById('install-btn');
     let deferredPrompt;
-    const installBtn = document.getElementById('install-btn');
 
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
@@ -1962,7 +1961,7 @@ displayCurrentDate();
           }
           deferredPrompt = null;
         } else {
-          alert('App is ready or you can install it manually from browser menu.');
+          alert('To install the app on your phone: Tap the browser menu (3 dots) and select "Add to Home Screen" or "Install App".');
         }
       });
     }
