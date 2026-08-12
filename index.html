@@ -8,7 +8,8 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <link rel="apple-touch-icon" type="image/x-icon" href="favicon.ico">
-    
+    <link rel="manifest" href="manifest.json">
+
     <meta name="theme-color" content="#2e7d32">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2693089227079842"
      crossorigin="anonymous"></script>
@@ -744,18 +745,40 @@ body {
             margin-top: 25px; box-shadow: 0 4px 10px rgba(46,125,50,0.2); transition: all 0.2s;
         }
         .close-compass-btn:hover { background-color: #1b5e20; transform: translateY(-2px); }
+    /* تنسيق زر تنزيل التطبيق العلوي */
+.app-download-btn {
+    background: linear-gradient(135deg, #ff9800, #f57c00) !important;
+    color: #fff !important;
+    font-weight: bold;
+    border: 1px solid #ffe0b2 !important;
+    animation: pulseButton 2s infinite;
+}
+
+.app-download-btn:hover {
+    background: linear-gradient(135deg, #f57c00, #e65100) !important;
+}
+
+/* حركة نبض خفيفة للزر لجذب انتباه الزوار */
+@keyframes pulseButton {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="top-controls-group">
-            <button class="top-btn" id="langToggleBtn" onclick="toggleLanguage()">🌐 English</button>
-            <button class="top-btn" onclick="toggleDarkMode()">🌓 <span id="txtDarkMode">الوضع الليلي</span></button>
-        </div>
-        <h1>MEDO JR 99 ISLAMIC</h1>
-        <p id="headerSub">بوابتك اليومية لمواقيت الصلاة والقرآن الكريم والأذكار وقصص الأنبياء</p>
+    <div class="top-controls-group">
+        <button class="top-btn app-download-btn" id="install-btn">
+    📥 تنزيل التطبيق
+</button>
+        <button class="top-btn" id="langToggleBtn" onclick="toggleLanguage()">🌐 English</button>
+        <button class="top-btn" onclick="toggleDarkMode()">🌓 <span id="txtDarkMode">الوضع الليلي</span></button>
     </div>
+    <h1>MEDO JR 99 ISLAMIC</h1>
+    <p id="headerSub">بوابتك اليومية لمواقيت الصلاة والقرآن الكريم والأذكار وقصص الأنبياء</p>
+</div>
 
     <div class="date-banner" id="currentHijriGregorianDate">
     📅 ...جاري تحميل التاريخ
@@ -1917,7 +1940,32 @@ function displayCurrentDate() {
     dateElement.innerHTML = `📅 ${hijriString} هـ الموافق ${gregorianString} م`;
 }
 
-displayCurrentDate();    
-    </script>
+displayCurrentDate();
+    
+    // --- كود تثبيت تطبيق الـ PWA ---
+    let deferredPrompt;
+    const installBtn = document.getElementById('install-btn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if(installBtn) installBtn.style.display = 'inline-block';
+    });
+
+    if(installBtn) {
+      installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          if (outcome === 'accepted') {
+            console.log('المستخدم وافق على تثبيت التطبيق');
+          }
+          deferredPrompt = null;
+        } else {
+          alert('التطبيق جاهز أو يمكنك التثبيت يدوياً من إعدادات المتصفح (إضافة إلى الشاشة الرئيسية).');
+        }
+      });
+    }
+  </script>
 </body>
 </html>
