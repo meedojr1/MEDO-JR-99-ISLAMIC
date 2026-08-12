@@ -770,8 +770,6 @@ body {
 
     <div class="header">
     <div class="top-controls-group">
-        <button class="top-btn app-download-btn" id="install-btn">
-    📥 تنزيل التطبيق
 </button>
         <button class="top-btn" id="langToggleBtn" onclick="toggleLanguage()">🌐 English</button>
         <button class="top-btn" onclick="toggleDarkMode()">🌓 <span id="txtDarkMode">الوضع الليلي</span></button>
@@ -1940,31 +1938,7 @@ function displayCurrentDate() {
     dateElement.innerHTML = `📅 ${hijriString} هـ الموافق ${gregorianString} م`;
 }
 
-displayCurrentDate
-
-const installBtn = document.getElementById('install-btn');
-    let deferredPrompt;
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      if(installBtn) installBtn.style.display = 'inline-block';
-    });
-
-    if(installBtn) {
-      installBtn.addEventListener('click', async () => {
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          const { outcome } = await deferredPrompt.userChoice;
-          if (outcome === 'accepted') {
-            console.log('App accepted');
-          }
-          deferredPrompt = null;
-        } else {
-          alert('To install the app on your phone: Tap the browser menu (3 dots) and select "Add to Home Screen" or "Install App".');
-        }
-      });
-    }
-  </script>
+displayCurrentDate();    
+    </script>
 </body>
 </html>
