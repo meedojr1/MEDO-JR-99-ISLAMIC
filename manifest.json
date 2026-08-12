@@ -1,0 +1,32 @@
+{
+  "background_color": "#ffffff",
+  "dir": "rtl",
+  "display": "standalone",
+  "name": "Medo JR 99 Islamic",
+  "orientation": "portrait",
+  "scope": "/MEDO-JR-99-ISLAMIC/",
+  "short_name": "MEDO ISLAMIC",
+  "start_url": "/MEDO-JR-99-ISLAMIC/",
+  "theme_color": "#2e7d32",
+  "icons": [
+    {
+      "src": "https://meedojr1.github.io/MEDO-JR-99-ISLAMIC/favicon.ico",
+      "type": "image/x-icon",
+      "isSquare": false,
+      "isPng": false,
+      "isWebp": false,
+      "isJpg": false,
+      "width": 0,
+      "is512x512": false,
+      "is256x256": false,
+      "is192x192": false
+    }
+  ],
+  "id": "/MEDO-JR-99-ISLAMIC/",
+  "description": "تطبيق إسلامي يضم قصص الأنبياء ومواقيت الصلاة",
+  "lang": "ar",
+  "categories": [
+    "books &amp; reference",
+    "education"
+  ]
+}
